@@ -1,41 +1,47 @@
-import 'react-native-gesture-handler';
-import React from 'react';
-import { Image, TextInput, TouchableOpacity, Button, StyleSheet, Text, View } from 'react-native';
+import * as React from 'react';
+import { StyleSheet, Button, Text, TextInput, View } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-//import AsyncStorage from '@react-native-community/async-storage';
 const AuthContext = React.createContext();
 
 function SplashScreen() {
   return (
-    <View>
-      <Text>Loading...</Text>
+    <View style={styles.container}>
+      <Text>Carregando...</Text>
     </View>
   );
 }
 
 function HomeScreen({ navigation }) {
+  const { signOut } = React.useContext(AuthContext);
+
   return (
+    <View>
+      <Text style={{ fontSize: 20 }}>
+        {
+          `Olá, \nSeja bem vindo! \nEsta é a sua tela inicial ` +
+          `\nRepare que depois que você fez login, não será necessário fazer novamente, mesmo que ` +
+          `você desligue o celular, eu já sei quem é você :) ` +
+          `\nA não ser que você clique em LOGOFF, se fizer isso, os dados de acesso serão apagados ` +
+          `\nEste é o comportamento esperado, avise o desenvolvedor se eu estiver meio quebrado`
+        }
+      </Text>
+      <View style={{ flexDirection: "row" }}>
+        <View style={{ margin: 10, flex: 1 }}>
 
-    <View style={styles.container}>
-
-      <View>
-        <Button
-          title="Meus dados"
-          onPress={() => navigation.navigate('MeusDados')}
-        />
+          <Button
+            title="Meus dados"
+            onPress={() => navigation.navigate('DadosPerfil')}
+          />
+        </View>
+        <View style={{ margin: 10, flex: 1 }}>
+          <Button
+            title="Logoff" onPress={signOut}
+          />
+        </View>
       </View>
-      <View>
-        <Text></Text>
-      </View>
-      <View>
-        <Button
-          title="Logoff"
-         
-        />
-      </View>
-
     </View>
   );
 }
@@ -44,30 +50,57 @@ function DadosScreen() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>Página do perfil</Text>
+      <Text>{`Que pena, ainda não tem nada aqui! \nAinda está tudo por fazer :/`}</Text>
     </View>
   );
 }
 
-function LoginScreen() {
+function CriarConta() {
+  return (
+    <View style={styles.container}>
+      <TextInput style={styles.inputs}
+        placeholder="Nome"
+      />
+      <TextInput style={styles.inputs}
+        placeholder="CPF"
+      />
+      <TextInput style={styles.inputs}
+        placeholder="Celular"
+      />
+      <Button title=" Próximo >>" onPress={() => alert('Nao podemos criar sua conta ainda!')} />
+    </View>
+  );
+}
+
+function SignInScreen({ navigation }) {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
 
   const { signIn } = React.useContext(AuthContext);
 
   return (
-    <View>
-      <TextInput
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-      />
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <Button title="Sign in" onPress={() => signIn({ username, password })} />
+    <View style={styles.container}>
+      <View style={{ flex: 2, justifyContent: "center" }}>
+        <TextInput style={styles.inputs}
+          placeholder="CPF"
+          value={username}
+          onChangeText={setUsername}
+        />
+        <TextInput style={styles.inputs}
+          placeholder="Senha"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+        <Button
+          title="Entrar" onPress={() => signIn({ username, password })} />
+      </View>
+
+      <View style={{ padding: 10, flex: 0.5 }}>
+        <Button
+          title="Criar conta" onPress={() => navigation.navigate('CriarConta')} />
+      </View>
+
     </View>
   );
 }
@@ -75,7 +108,6 @@ function LoginScreen() {
 const Stack = createStackNavigator();
 
 export default function App({ navigation }) {
-
   const [state, dispatch] = React.useReducer(
     (prevState, action) => {
       switch (action.type) {
@@ -112,11 +144,11 @@ export default function App({ navigation }) {
       let userToken;
 
       try {
-        userToken = await AsyncStorage.getItem('userToken');
+        userToken = await SecureStore.getItemAsync('userToken');
       } catch (e) {
+        alert('sem token')
         // Restoring token failed
       }
-
       // After restoring token, we may need to validate it in production apps
 
       // This will switch to the App screen or Auth screen and this loading
@@ -133,56 +165,72 @@ export default function App({ navigation }) {
         // In a production app, we need to send some data (usually username, password) to server and get a token
         // We will also need to handle errors if sign in failed
         // After getting token, we need to persist the token using `AsyncStorage`
-        // In the example, we'll use a dummy token
-
-        dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' });
+        // In the example, we'll use a dummy toke  
+        await SecureStore.setItemAsync('userToken', 'dummyauthtoken');
+        dispatch({ type: 'SIGN_IN', token: 'dummyauthtoken' });
       },
-      signOut: () => dispatch({ type: 'SIGN_OUT' }),
+      signOut: async () => {
+        try {
+          await SecureStore.deleteItemAsync('userToken')
+        } catch (error) {
+          alert(error)
+        }
+
+        dispatch({ type: 'SIGN_OUT' })
+      },
       signUp: async data => {
         // In a production app, we need to send user data to server and get a token
         // We will also need to handle errors if sign up failed
         // After getting token, we need to persist the token using `AsyncStorage`
         // In the example, we'll use a dummy token
-
-        dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' });
+        //await SecureStore.setItemAsync(key, value)
+        dispatch({ type: 'SIGN_IN', token: 'dummyauthtoken' });
       },
     }),
     []
   );
+
   return (
     <AuthContext.Provider value={authContext}>
       <NavigationContainer>
-
-
         <Stack.Navigator>
           {state.isLoading ? (
             // We haven't finished checking for the token yet
-            <Stack.Screen name="Splash" component={SplashScreen} />
+            <Stack.Screen name="Splash" component={SplashScreen} options={{ title: 'Carregando...' }} />
           ) : state.userToken == null ? (
+            // No token found, user isn't signed in
             <>
-              <Stack.Screen name="Entrar" component={LoginScreen} options={{
-                title: 'Entrar',
-                // When logging out, a pop animation feels intuitive
-                animationTypeForReplace: state.isSignout ? 'pop' : 'push'
-              }} />
-
+              <Stack.Screen
+                name="SignIn"
+                component={SignInScreen}
+                options={{
+                  title: 'Entrar',
+                  // When logging out, a pop animation feels intuitive
+                  animationTypeForReplace: state.isSignout ? 'pop' : 'push',
+                }}
+              />
+              <Stack.Screen
+                name="CriarConta"
+                component={CriarConta}
+                options={{
+                  title: 'Criar minha conta'
+                }}
+              />
             </>
           ) : (
+                // User is signed in
                 <>
-                  <Stack.Screen name="Inicio" component={HomeScreen} options={{
-                    title: 'Meu Plano'
-                  }} />
-                  <Stack.Screen name="MeusDados" component={DadosScreen} options={{ title: 'Meus Dados' }} />
-
+                  <Stack.Screen name="Início" component={HomeScreen} options={{ title: 'Início' }}
+                  // options={({ navigation, route }) => ({
+                  //   headerTitle: props => <LogoTitle {...props} />,
+                  // })}
+                  />
+                  <Stack.Screen name="DadosPerfil" component={DadosScreen} options={{ title: 'Meus Dados' }} />
                 </>
-
               )}
-
         </Stack.Navigator>
-
-
       </NavigationContainer>
-    </AuthContext.Provider >
+    </AuthContext.Provider>
   );
 }
 
@@ -191,8 +239,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
-  botoesLogin: {
+  inputs: {
+    fontSize: 25,
+    padding: 20,
+    flex: 0
   }
 });
