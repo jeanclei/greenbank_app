@@ -8,7 +8,7 @@ import SplashScreen from './pages/splash'
 import DadosScreen from './pages/home/dados_plano'
 import HomeScreen from './pages/home/home'
 
-import CriarConta from './pages/cadastro/criarconta'
+import CriarConta from './pages/login/criarconta'
 import SignInScreen from './pages/login/login'
 
 import { AuthContext } from './Context/Context'
