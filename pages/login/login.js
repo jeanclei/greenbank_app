@@ -12,23 +12,13 @@ export default function SignInScreen({ navigation }) {
     <View style={styles.container} >
 
         <TextInput style={styles.inputs}
-          placeholder="CPF"
+          placeholder="Digite seu CPF"
           value={username}
           onChangeText={setUsername}
         />
-        <TextInput style={styles.inputs}
-          placeholder="Senha"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
         <Button
-          title="Entrar" onPress={() => signIn({ username, password })} />
-     
+          title="Começar" onPress={() => signIn({ username, password })} />    
 
-        <Button
-          title="Criar conta" onPress={() => navigation.navigate('CriarConta')}
-        />
 
     </View>
   );

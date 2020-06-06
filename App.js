@@ -112,7 +112,7 @@ export default function App({ navigation }) {
                 options={{
                   title: 'Entrar',
                   // When logging out, a pop animation feels intuitive
-                 // animationTypeForReplace: state.isSignout ? 'pop' : 'push',
+                  animationTypeForReplace: state.isSignout ? 'pop' : 'push',
                 }}
               />
               <Stack.Screen
