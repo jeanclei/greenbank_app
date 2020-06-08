@@ -8,7 +8,8 @@ import DadosScreen from './pages/home/dados_plano'
 import HomeScreen from './pages/home/home'
 
 import CriarConta from './pages/login/criarconta'
-import SignInScreen from './pages/login/login'
+import Login from './pages/login/login'
+import Login2 from './pages/login/login2'
 
 import { AuthContext } from './Context/Context'
 const Stack = createStackNavigator();
@@ -107,8 +108,15 @@ export default function App({ navigation }) {
             // No token found, user isn't signed in
             <>
               <Stack.Screen
-                name="SignIn"
-                component={SignInScreen}
+                name="SignIn" component={Login}
+                options={{
+                  title: 'Entrar',
+                  // When logging out, a pop animation feels intuitive
+                  animationTypeForReplace: state.isSignout ? 'pop' : 'push',
+                }}
+              />
+              <Stack.Screen
+                name="Login2" component={Login2}
                 options={{
                   title: 'Entrar',
                   // When logging out, a pop animation feels intuitive

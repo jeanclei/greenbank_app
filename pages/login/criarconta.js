@@ -2,9 +2,12 @@ import * as React from 'react';
 import { StyleSheet, Button, TextInput, View } from 'react-native';
 
 
-export default function CriarConta() {
+export default function CriarConta({ route, navigation }) {
+
+  const { cpf } = route.params;
+  
   return (
-    <View style={styles.container}>
+    <View style={styles.container} >
       <TextInput style={styles.inputs}
         placeholder="Nome"
       />
@@ -21,14 +24,14 @@ export default function CriarConta() {
 
 const styles = StyleSheet.create({
   container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center'
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   inputs: {
-      fontSize: 25,
-      padding: 20,
-      flex: 0
+    fontSize: 25,
+    padding: 20,
+    flex: 0
   }
 });
