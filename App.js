@@ -9,7 +9,6 @@ import HomeScreen from './pages/home/home'
 
 import CriarConta from './pages/login/criarconta'
 import Login from './pages/login/login'
-import Login2 from './pages/login/login2'
 
 import { AuthContext } from './Context/Context'
 const Stack = createStackNavigator();
@@ -29,12 +28,18 @@ export default function App({ navigation }) {
             ...prevState,
             isSignout: false,
             userToken: action.token,
+            userID: action.id,
+            userNome: action.nome,
+            userCpf: action.cpf,
           };
         case 'SIGN_OUT':
           return {
             ...prevState,
             isSignout: true,
             userToken: null,
+            userID: null,
+            userNome: null,
+            userCpf: null,
           };
       }
     },
@@ -48,10 +53,13 @@ export default function App({ navigation }) {
   React.useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
-      let userToken;
+      let userToken, userid, usernome, usercpf;
 
       try {
-        userToken = await SecureStore.getItemAsync('userToken');
+        userToken = await SecureStore.getItemAsync('cadprevtoken');
+        userid = await SecureStore.getItemAsync('cadprevuserid');
+        usernome = await SecureStore.getItemAsync('cadprevnome');
+        usercpf = await SecureStore.getItemAsync('cadprevcpf');
       } catch (e) {
         alert('sem token')
         // Restoring token failed
@@ -60,7 +68,13 @@ export default function App({ navigation }) {
 
       // This will switch to the App screen or Auth screen and this loading
       // screen will be unmounted and thrown away.
-      dispatch({ type: 'RESTORE_TOKEN', token: userToken });
+      dispatch({
+        type: 'RESTORE_TOKEN',
+        token: userToken,
+        id: userid,
+        nome: usernome,
+        cpf: usercpf
+      });
     };
 
     bootstrapAsync();
@@ -68,17 +82,30 @@ export default function App({ navigation }) {
 
   const authContext = React.useMemo(
     () => ({
-      signIn: async data => {
+
+      signIn: async ({ data }) => {
         // In a production app, we need to send some data (usually username, password) to server and get a token
         // We will also need to handle errors if sign in failed
         // After getting token, we need to persist the token using `AsyncStorage`
         // In the example, we'll use a dummy toke  
-        await SecureStore.setItemAsync('userToken', 'dummyauthtoken');
-        dispatch({ type: 'SIGN_IN', token: 'dummyauthtoken' });
+        await SecureStore.setItemAsync('cadprevtoken', data.token);
+        await SecureStore.setItemAsync('cadprevuserid', data.token);
+        await SecureStore.setItemAsync('cadprevnome', data.token);
+        await SecureStore.setItemAsync('cadprevcpf', data.token);
+        dispatch({
+          type: 'SIGN_IN',
+          token: data.token,
+          id: data.id,
+          nome: data.nome,
+          cpf: data.cpf
+        });
       },
       signOut: async () => {
         try {
-          await SecureStore.deleteItemAsync('userToken')
+          await SecureStore.deleteItemAsync('cadprevtoken');
+          await SecureStore.deleteItemAsync('cadprevuserid');
+          await SecureStore.deleteItemAsync('cadprevnome');
+          await SecureStore.deleteItemAsync('cadprevcpf');
         } catch (error) {
           alert(error)
         }
@@ -116,14 +143,6 @@ export default function App({ navigation }) {
                 }}
               />
               <Stack.Screen
-                name="Login2" component={Login2}
-                options={{
-                  title: 'Entrar',
-                  // When logging out, a pop animation feels intuitive
-                  animationTypeForReplace: state.isSignout ? 'pop' : 'push',
-                }}
-              />
-              <Stack.Screen
                 name="CriarConta"
                 component={CriarConta}
                 options={{
@@ -134,7 +153,11 @@ export default function App({ navigation }) {
           ) : (
                 // User is signed in
                 <>
-                  <Stack.Screen name="Início" component={HomeScreen} options={{ title: 'Início' }}
+                  <Stack.Screen name="Início" component={HomeScreen} 
+                  options={{
+                    title: 'Início',
+                    params:{state}
+                  }}
                   // options={({ navigation, route }) => ({
                   //   headerTitle: props => <LogoTitle {...props} />,
                   // })}

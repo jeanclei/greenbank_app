@@ -5,13 +5,14 @@ import {
   KeyboardAvoidingView, Platform, TouchableOpacity, Modal, SafeAreaView
 } from 'react-native';
 import { mask, unMask } from 'remask';
-import { api, apivalidacpf } from '../../api'
+import { apivalidacpf } from '../../apivalidacpf'
+import { AuthContext } from '../../Context/Context';
 
 const AnimatableBtn = Animatable.createAnimatableComponent(TouchableOpacity)
 const AnimatableModal = Animatable.createAnimatableComponent(Modal)
 
 export default function SignInScreen({ navigation }) {
-
+  const { signIn } = React.useContext(AuthContext);
   const btnComecar = React.useRef();
 
   const [cpf, setCPF] = React.useState('');
@@ -54,7 +55,33 @@ export default function SignInScreen({ navigation }) {
   }
 
   const apiLogin = async () => {
-    alert(`cpf: ${cpf}, senha: ${pass} ---`)
+    setdigitarSenha(false)
+    try {
+      let response = await apivalidacpf({
+        method: 'post',
+        url: '/postauthorization',
+        headers: { "cpf": unMask(cpf), pass: pass },
+        timeout: 5000
+      });
+      //erros da API ou de senha caen no catch, entao se nao entrar nesse if, quer dizer que 
+      //nao deu erro na api, mas nao tem um token, e isso é uma probabilidade muito remota!
+      if (response.data.token) {
+        signIn({ data: response.data })
+      } else {
+        alert('Ocorreu um erro inesperado, tente novamente mais tarde.')
+      }
+
+    } catch (error) {
+      const { status } = error.response || error
+      if (status == 401) {
+        alert('Senha inválida')
+      } else {
+        alert('Ocorreu um erro, verifique sua conexão com a internet.')
+      }
+    } finally {
+      setPass('')
+    }
+
   }
 
   return (
@@ -106,6 +133,7 @@ export default function SignInScreen({ navigation }) {
         <AnimatableModal animationType="slide" transparent={false} visible={digitarSenha}
           onRequestClose={() => {
             setdigitarSenha(false)
+            setPass('')
           }}
         >
           <Text style={

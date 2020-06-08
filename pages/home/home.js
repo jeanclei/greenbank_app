@@ -8,7 +8,6 @@ import { AuthContext } from '../../Context/Context'
 
 export default function HomeScreen({ navigation }) {
   const { signOut } = React.useContext(AuthContext);
-
   return (
     <View>
       <Text style={{ fontSize: 20 }}>
@@ -18,6 +17,7 @@ export default function HomeScreen({ navigation }) {
           `você desligue o celular, eu já sei quem é você :) ` +
           `\nA não ser que você clique em LOGOFF, se fizer isso, os dados de acesso serão apagados ` +
           `\nEste é o comportamento esperado, avise o desenvolvedor se eu estiver meio quebrado`
+
         }
       </Text>
       <View style={{ flexDirection: "row" }}>
@@ -25,7 +25,9 @@ export default function HomeScreen({ navigation }) {
 
           <Button
             title="Meus dados"
-            onPress={() => navigation.navigate('DadosPerfil')}
+            onPress={() => {
+              navigation.navigate('DadosPerfil')
+            }}
           />
         </View>
         <View style={{ margin: 10, flex: 1 }}>
