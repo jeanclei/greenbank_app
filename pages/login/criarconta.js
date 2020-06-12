@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, TouchableOpacity, Button, View, Text } from 'react-native';
-import {
-  Form, Container, Content, Input, Item, Label,
-  Picker, Icon
-} from 'native-base';
+import { Form, Container, Content, Input, Item, Label, Picker, Icon } from 'native-base';
 import DatePicker from 'react-native-datepicker'
 
 import { api } from '../../api'
@@ -31,7 +28,7 @@ export default function CriarConta({ route, navigation }) {
   }
 
   const enviacadastro = async () => {
-    
+
     try {
       let response = await api({
         method: 'post',
@@ -86,6 +83,19 @@ export default function CriarConta({ route, navigation }) {
             <Input style={styles.input} disabled={true} value={mask(cpf, '999.999.999-99')} />
           </Item>
           <View style={{ flexDirection: 'row' }}>
+          <Item style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+              <Label style={styles.inputlabel}>Sexo</Label>
+              <Picker
+                mode="dropdown"
+                selectedValue={sexo}
+                style={{ width: 150 }}
+                onValueChange={(itemValue, itemIndex) => setsexo(itemValue)}
+              >
+                <Picker.Item label="Selecione" value="N" />
+                <Picker.Item label="Masculino" value="M" />
+                <Picker.Item label="Feminino" value="F" />
+              </Picker>
+            </Item>
             <Item style={{ flexDirection: 'column', alignItems: 'flex-start' }} >
               <Label style={styles.inputlabel}>Data de Nascimento</Label>
               <DatePicker
@@ -96,8 +106,9 @@ export default function CriarConta({ route, navigation }) {
                 format="DD-MM-YYYY"
                 minDate="01-01-1900"
                 maxDate="01-01-2016"
+                locale="pt-BR"
                 confirmBtnText="Ok"
-                cancelBtnText="Cancel"
+                cancelBtnText="Cancela"
                 customStyles={{
                   dateIcon: {
                     position: 'absolute',
@@ -112,25 +123,7 @@ export default function CriarConta({ route, navigation }) {
                 }}
                 onDateChange={(date) => { setdtnasc(date) }}
               />
-            </Item>
-            <Item style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-              <Label style={styles.inputlabel}>Sexo</Label>
-              <Picker
-                mode="dropdown"
-                placeHolderText="Select your SIM"
-                placeholderStyle={{ color: "#bfc6ea" }}
-                placeholderIconColor="#007aff"
-                iosHeader="Selecione o sexo"
-                iosIcon={<Icon name="arrow-down" />}
-                style={{ width: 150 }}
-                selectedValue={sexo}
-                onValueChange={(v) => setsexo(v)}
-              >
-                <Picker.Item label="Selecione" value="N" />
-                <Picker.Item label="Masculino" value="M" />
-                <Picker.Item label="Feminino" value="F" />
-              </Picker>
-            </Item>
+            </Item>            
           </View>
 
           <Item floatingLabel>

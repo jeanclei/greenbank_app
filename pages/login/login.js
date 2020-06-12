@@ -2,11 +2,14 @@ import * as React from 'react';
 import * as Animatable from 'react-native-animatable'
 import {
   StyleSheet, Text, TextInput, View, ImageBackground,
-  KeyboardAvoidingView, Platform, TouchableOpacity, Modal, SafeAreaView
+  KeyboardAvoidingView, Platform, TouchableOpacity, Modal
 } from 'react-native';
 import { mask, unMask } from 'remask';
 import { apivalidacpf } from '../../api'
 import { AuthContext } from '../../Context/Context';
+import { Form } from 'native-base';
+
+
 
 const AnimatableBtn = Animatable.createAnimatableComponent(TouchableOpacity)
 const AnimatableModal = Animatable.createAnimatableComponent(Modal)
@@ -96,8 +99,7 @@ export default function SignInScreen({ navigation }) {
         ios: 'padding',
         android: null,
       })} >
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-
+        <Form style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%' }}>
           <Text style={
             { flex: 0, margin: 10, fontSize: 40, color: "#888" }
           }>Olá, seja bem vindo!</Text>
@@ -133,7 +135,7 @@ export default function SignInScreen({ navigation }) {
               </AnimatableBtn>
             </View>
           </Animatable.View>
-        </View>
+        </Form>
       </KeyboardAvoidingView>
 
       {/* Modal para digitar a senha... */}
