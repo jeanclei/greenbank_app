@@ -1,18 +1,31 @@
 import * as React from 'react';
-import { StyleSheet, Button, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Button, Text, TextInput, View, SafeAreaView } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+//import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { AuthContext } from '../../Context/Context'
+import { Header, Left, Icon, Container, Content, Right, Body } from 'native-base';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default function HomeScreen({ navigation }) {
-  const { signOut } = React.useContext(AuthContext);
+  const { authContext, state } = React.useContext(AuthContext);
+  const { signOut } = authContext
+
   return (
-    <View>
+
+    <Container >
+
+      <Header style={{ justifyContent: "flex-start" }}>
+        <TouchableOpacity style={{ padding: 15 }} onPress={navigation.openDrawer}>
+          <Icon name="ios-menu" ></Icon>
+        </TouchableOpacity>
+      </Header>
+
+      
       <Text style={{ fontSize: 20 }}>
         {
-          `Olá, \nSeja bem vindo! \nEsta é a sua tela inicial ` +
+          `Olá, ${state.userNome}\nSeja bem vindo! \nEsta é a sua tela inicial ` +
           `\nRepare que depois que você fez login, não será necessário fazer novamente, mesmo que ` +
           `você desligue o celular, eu já sei quem é você :) ` +
           `\nA não ser que você clique em LOGOFF, se fizer isso, os dados de acesso serão apagados ` +
@@ -20,22 +33,6 @@ export default function HomeScreen({ navigation }) {
 
         }
       </Text>
-      <View style={{ flexDirection: "row" }}>
-        <View style={{ margin: 10, flex: 1 }}>
-
-          <Button
-            title="Meus dados"
-            onPress={() => {
-              navigation.navigate('DadosPerfil')
-            }}
-          />
-        </View>
-        <View style={{ margin: 10, flex: 1 }}>
-          <Button
-            title="Logoff" onPress={signOut}
-          />
-        </View>
-      </View>
-    </View>
+    </Container>
   );
 }
