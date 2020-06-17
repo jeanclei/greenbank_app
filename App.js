@@ -14,8 +14,8 @@ import Login from './pages/login/login'
 import CriarConta from './pages/login/criarconta'
 
 import HomeScreen from './pages/home/home'
-
 import DadosScreen from './pages/home/dados_plano'
+import CompletarCadastro from './pages/home/completar_cadastro'
 
 
 import { AuthContext } from './Context/Context'
@@ -158,7 +158,8 @@ export default function App({ navigation }) {
     return (
       <Container>
         <Header style={{ height: 100, backgroundColor: 'white', justifyContent: "flex-start" }}>
-          <Text>{`\nFaz de conta que aqui tem um header bem bonito..`}</Text>
+          <Text>{`\nFaz de conta que aqui tem um header bem bonito..` +
+            `\nPoderia ser um avatar, ou algo assim`}</Text>
         </Header>
         <DrawerItemList {...props} />
 
@@ -222,7 +223,10 @@ export default function App({ navigation }) {
                   <Drawer.Screen name="Início" component={HomeScreen}
                   />
                   <Drawer.Screen name="DadosPerfil" component={DadosScreen}
-                  // options={{ title: 'Meus Dados' }} 
+                  options={{ title: 'Meus Dados' }} 
+                  />
+                  <Drawer.Screen name="CompletarCadastro" component={CompletarCadastro}
+                  options={{ title: 'Completar cadastro' }} 
                   />
                 </Drawer.Navigator>
               </NavigationContainer>

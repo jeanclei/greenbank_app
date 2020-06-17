@@ -20,7 +20,7 @@ export default function SignInScreen({ navigation }) {
 
   const btnComecar = React.useRef();
 
-  const [cpf, setCPF] = React.useState('');
+  const [cpf, setCPF] = React.useState('980.458.670-35');
   const [pass, setPass] = React.useState('');
   const onChangeCPF = ev => {
     if (unMask(ev).length == 11) {

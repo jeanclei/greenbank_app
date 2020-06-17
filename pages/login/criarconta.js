@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { StyleSheet, TouchableOpacity, Button, View, Text } from 'react-native';
-import { Form, Container, Content, Input, Item, Label, Picker, Icon } from 'native-base';
+import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { Form, Container, Content, Input, Item, Label } from 'native-base';
 import DatePicker from 'react-native-datepicker'
+import RNPickerSelect from 'react-native-picker-select';
 
 import { api } from '../../api'
 
@@ -16,7 +17,7 @@ export default function CriarConta({ route, navigation }) {
   const { cpf } = route.params;
   const [nome, setnome] = React.useState('');
   const [dtnasc, setdtnasc] = React.useState('');
-  const [sexo, setsexo] = React.useState('N');
+  const [sexo, setsexo] = React.useState('');
   const [nomemae, setnomemae] = React.useState('');
   const [email, setemail] = React.useState('');
   const [celular, setcelular] = React.useState('');
@@ -59,6 +60,7 @@ export default function CriarConta({ route, navigation }) {
           'Verifique os próximos passos para ativar seu cadastro e começar a investir.')
         signIn(response.data.data.createPessoaFisica)
       } else {
+        console.log(response.data)
         alert(`Ocorreu algum erro, verifique se preencheu todos os dados corretamente! \n${response.data.errors}`)
       }
 
@@ -74,77 +76,90 @@ export default function CriarConta({ route, navigation }) {
       <Content>
         <Form style={{ marginTop: 10, marginBottom: 50 }} >
 
-          <Item floatingLabel >
+          <Item floatingLabel
+            style={nome == '' ? ({ borderBottomColor: "red" }) : ({ borderBottomColor: "green" })} >
             <Label style={styles.inputlabel} >Nome Completo</Label>
             <Input style={styles.input} onChangeText={setnome} value={nome} />
           </Item>
-          <Item floatingLabel>
+          <Item floatingLabel
+            style={cpf == '' ? ({ borderBottomColor: "red" }) : ({ borderBottomColor: "green" })} >
             <Label style={styles.inputlabel}>CPF</Label>
             <Input style={styles.input} disabled={true} value={mask(cpf, '999.999.999-99')} />
           </Item>
           <View style={{ flexDirection: 'row' }}>
-          <Item style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-              <Label style={styles.inputlabel}>Sexo</Label>
-              <Picker
-                mode="dropdown"
-                selectedValue={sexo}
-                style={{ width: 150 }}
-                onValueChange={(itemValue, itemIndex) => setsexo(itemValue)}
-              >
-                <Picker.Item label="Selecione" value="N" />
-                <Picker.Item label="Masculino" value="M" />
-                <Picker.Item label="Feminino" value="F" />
-              </Picker>
-            </Item>
-            <Item style={{ flexDirection: 'column', alignItems: 'flex-start' }} >
+            <Item style={
+              [{ flexDirection: 'column', alignItems: 'flex-start' },
+              dtnasc == '' ? ({ borderBottomColor: "red" }) : ({ borderBottomColor: "green" })]} >
               <Label style={styles.inputlabel}>Data de Nascimento</Label>
               <DatePicker
-                style={{ width: 200 }}
+                style={{ width: 150 }}
                 date={dtnasc}
                 mode="date"
+                androidMode="spinner"
                 placeholder="Selecione"
-                format="DD-MM-YYYY"
-                minDate="01-01-1900"
-                maxDate="01-01-2016"
+                format="DD/MM/YYYY"
+                minDate="01/01/1900"
+                maxDate="31/12/2016"
                 locale="pt-BR"
                 confirmBtnText="Ok"
-                cancelBtnText="Cancela"
+                cancelBtnText="Cancelar"
                 customStyles={{
-                  dateIcon: {
-                    position: 'absolute',
-                    left: 0,
-                    top: 4,
-                    marginLeft: 0
-                  },
+                  // dateIcon: {
+                  //   position: 'relative',
+                  //   left: 0,
+                  //   top: 4,
+                  //   marginLeft: 5
+                  // },
                   dateInput: {
-                    marginLeft: 36
+                    // marginLeft: 36,
+                    borderWidth: 0,
                   }
                   // ... You can check the source to find the other keys.
                 }}
                 onDateChange={(date) => { setdtnasc(date) }}
               />
-            </Item>            
+            </Item>
+            <Item style={
+              [{ flexDirection: 'column', flex: 1, alignItems: 'flex-start' },
+              sexo == '' ? ({ borderBottomColor: "red" }) : ({ borderBottomColor: "green" })]}>
+              <Label style={styles.inputlabel}>Sexo</Label>
+              <RNPickerSelect
+                onValueChange={(value) => setsexo(value)}
+                doneText="Concluído"
+                style={{ inputIOS: { paddingTop: 10, paddingLeft: 10 } }}
+                placeholder={{ label: 'Selecione', value: '', color: 'orange' }}
+                items={[
+                  { label: 'Masculino', value: 'M' },
+                  { label: 'Feminino', value: 'F' },
+                ]}
+              />
+            </Item>
           </View>
 
-          <Item floatingLabel>
+          <Item floatingLabel
+            style={nomemae == '' ? ({ borderBottomColor: "red" }) : ({ borderBottomColor: "green" })} >
             <Label style={styles.inputlabel}>Nome da Mãe</Label>
             <Input style={styles.input} value={nomemae} onChangeText={setnomemae} />
           </Item>
-          <Item floatingLabel>
+          <Item floatingLabel
+            style={email.indexOf("@") == -1 || email.indexOf(".") == -1 ? ({ borderBottomColor: "red" }) : ({ borderBottomColor: "green" })} >
             <Label style={styles.inputlabel}>Email</Label>
             <Input style={styles.input} value={email} onChangeText={setemail}
               keyboardType="email-address" autoCapitalize="none" />
           </Item>
-          <Item floatingLabel>
+          <Item floatingLabel
+            style={celular.length !== 16 ? ({ borderBottomColor: "red" }) : ({ borderBottomColor: "green" })} >
             <Label style={styles.inputlabel}>Celular</Label>
             <Input style={styles.input} keyboardType="numeric" value={celular} onChangeText={validacelular} />
           </Item>
-          <Item floatingLabel>
+          <Item floatingLabel
+            style={pass.length < 8 ? ({ borderBottomColor: "red" }) : ({ borderBottomColor: "green" })} >
             <Label style={styles.inputlabel}>{`Crie uma senha (Mínimo 8 caracteres)`}</Label>
             <Input style={styles.input} secureTextEntry={true} value={pass} onChangeText={setpass}
               autoCapitalize="none" autoCorrect={false} />
           </Item>
-          <Item floatingLabel>
+          <Item floatingLabel
+            style={pass2.length < 8 || pass !== pass2 ? ({ borderBottomColor: "red" }) : ({ borderBottomColor: "green" })} >
             <Label style={styles.inputlabel}>Confirmar senha</Label>
             <Input style={styles.input} secureTextEntry={true} value={pass2} onChangeText={setpass2}
               autoCapitalize="none" autoCorrect={false} />
